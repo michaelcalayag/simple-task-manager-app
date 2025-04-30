@@ -41,3 +41,22 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+interface PaginationLinks {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+export interface Task {
+    id: number;
+    title: string;
+    description: string;
+    data? : Task[];
+    links? : Tasks.PaginationLinks[];
+    status: string;
+    priority?: string;
+    due_date?: string | null;
+    user_id: number;
+    created_at: string;
+    updated_at: string;
+}

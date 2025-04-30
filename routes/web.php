@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TaskController;
+use Illuminate\Console\View\Components\Task;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -11,6 +13,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('/task-manager',TaskController::class);
+    Route::post('/task-manager/filter', [TaskController::class, 'filteredData'])->name('task-manager.filter');
+    Route::put('/task-manager/{id}/updateStatus', [TaskController::class, 'updateStatus'])->name('task-manager.updateStatus');
 });
 
 require __DIR__.'/settings.php';
