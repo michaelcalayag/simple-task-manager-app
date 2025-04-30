@@ -8,4 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('app:purge-soft-deleted-tasks')->daily();
+Schedule::command('app:purge-soft-deleted-tasks')->lastDayOfMonth();
