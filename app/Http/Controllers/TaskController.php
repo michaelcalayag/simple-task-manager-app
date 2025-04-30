@@ -112,9 +112,15 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request,string $id)
     {
-        //
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        Tasks::findOrFail($id)->delete();
+
+        redirect()->route('task-manager.index');
     }
 
     public function filteredData(Request $request)

@@ -132,7 +132,7 @@ export default function CreateTask() {
                 </p>
                 <form className="space-y-6">
                     <div className="flex flex-col gap-10 md:flex-row">
-                        <div className="flex-1 space-y-6">
+                        <div className="flex-1 space-y-4">
                             <div>
                                 <Label
                                     htmlFor="title"

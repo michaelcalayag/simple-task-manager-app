@@ -50,10 +50,6 @@ export default function Index({ Tasks }: { Tasks: PaginatedResponse<Task> }) {
     const [sortColumn, setSortColumn] = useState('id');
     const [searchTitle, setSearchTitle] = useState(null as string | null);
     const [filterStatus, setFilterStatus] = useState(null as string | null);
-    // const [isPublished, setPublished] = useState<{ isPublished: boolean | null; taskId: number | null }>({
-    //     isPublished: null,
-    //     taskId: null
-    // });
 
     const [sortDirection, setSortDirection] = useState('asc');
     const [pageLimit, setPageLimit] = useState(Tasks.per_page || 10);

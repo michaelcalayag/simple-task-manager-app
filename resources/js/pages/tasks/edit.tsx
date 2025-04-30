@@ -10,6 +10,7 @@ import { CircleOff, Save } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import DeleteTask from '@/components/delete-task';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -234,6 +235,9 @@ export default function EditTask({Task} : {Task : Task }) {
                                     </span>
                                 </div>
                             )}
+                            <p className='mt-4'>
+                                <DeleteTask id={ Task.id }/>
+                            </p>
                         </div>
                     </div>
                 </form>

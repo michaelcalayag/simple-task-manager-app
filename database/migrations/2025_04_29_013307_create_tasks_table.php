@@ -12,15 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->id(); // Primary Key
-            $table->string('title'); // Task title
-            $table->text('description')->nullable(); // Optional task description
-            $table->enum('status', ['draft','publish','to-do', 'in-progress', 'done'])->default('draft'); // Task status
-            $table->timestamp('due_date')->nullable(); // Due date for the task
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // User association
-            $table->string('image')->nullable(); // Optional image path
-            $table->string('priority')->default('low'); // Task priority
-            $table->timestamps(); // Created at & Updated at
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->enum('status', ['draft','publish','to-do', 'in-progress', 'done'])->default('draft');
+            $table->timestamp('due_date')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('image')->nullable();
+            $table->string('priority')->default('low');
+            $table->foreignId('task_id')->nullable()->constrained('tasks')->onDelete('cascade');
+            $table->softDeletes();
+            $table->timestamps();
         });
 
     }
