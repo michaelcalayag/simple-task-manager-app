@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tasks;
 use Illuminate\Http\Request;
 
 class SubTaskController extends Controller
@@ -25,9 +26,28 @@ class SubTaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, )
     {
-        //
+        // Validate incoming data
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:to-do,in-progress,done',
+            'task_id' => 'required'
+        ]);
+
+        // Create the subtask using the validated data
+        $subtask = Tasks::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'status' => $validated['status'],
+            'task_id' => $validated['task_id'],
+        ]);
+
+        return response()->json([
+            'message' => 'Subtask created successfully.',
+            'data' => $subtask,
+        ]);
     }
 
     /**

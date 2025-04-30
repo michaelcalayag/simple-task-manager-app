@@ -17,7 +17,8 @@ class Tasks extends Model
         'due_date',
         'user_id',
         'image',
-        'priority'
+        'priority',
+        'task_id'
     ];
 
     public function images()
@@ -28,6 +29,11 @@ class Tasks extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function subtasks()
+    {
+        return $this->hasMany(Tasks::class,'task_id','id');
     }
 
 

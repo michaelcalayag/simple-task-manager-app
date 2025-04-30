@@ -18,7 +18,7 @@ class TaskController extends Controller
         $uid = auth()->user()->id;
 
         return Inertia::render('tasks/index', [
-            'Tasks' => Tasks::where('user_id', $uid)->orderBy('id','asc')->paginate(10)->withQueryString(),
+            'Tasks' => Tasks::with('subtasks')->where('user_id', $uid)->orderBy('id','asc')->paginate(10)->withQueryString(),
         ]);
     }
 
@@ -81,7 +81,7 @@ class TaskController extends Controller
         $uid = auth()->user()->id;
 
         return Inertia::render('tasks/edit', [
-            'Task' => Tasks::findOrFail($id)
+            'Task' => Tasks::with('subtasks')->findOrFail($id)
         ]);
     }
 
@@ -118,7 +118,7 @@ class TaskController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        Tasks::findOrFail($id)->delete();
+        Tasks::with('subtask')->where('id',$id)->delete();
 
         redirect()->route('task-manager.index');
     }

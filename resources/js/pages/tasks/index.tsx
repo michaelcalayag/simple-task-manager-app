@@ -45,6 +45,7 @@ interface PaginatedResponse<T> {
 }
 
 export default function Index({ Tasks }: { Tasks: PaginatedResponse<Task> }) {
+    console.log(Tasks);
     const [tasks, setTasks] = useState<Task[]>(Tasks?.data);
     const [pagination, setPagination] = useState<PaginatedResponse<Task>>(Tasks);
     const [sortColumn, setSortColumn] = useState('id');

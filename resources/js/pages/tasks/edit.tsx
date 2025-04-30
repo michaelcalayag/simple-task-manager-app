@@ -6,11 +6,16 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { Label } from '@radix-ui/react-label';
-import { CircleOff, Save } from 'lucide-react';
+import { CircleOff, Plus, Save } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import DeleteTask from '@/components/delete-task';
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import AddSubtask from './subtask/add-subtask';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import DeleteTaskSimplified from '@/components/delete-task-simplified';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,6 +27,12 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('task-manager.create'),
     },
 ];
+interface Subtask {
+    id: number;
+    title: string;
+    description?: string;
+    status: string;
+}
 
 interface Task {
     id: number;
@@ -31,6 +42,7 @@ interface Task {
     priority: string;
     due_date: string;
     image: File | null;
+    subtasks?: Subtask[];
 }
 
 export default function EditTask({Task} : {Task : Task }) {
@@ -73,13 +85,43 @@ export default function EditTask({Task} : {Task : Task }) {
         }
     };
 
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+        window.location.reload();
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Add Task" />
             <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
                 <div className="flex items-center justify-between border-b border-neutral-300 p-4 dark:border-neutral-700 dark:bg-neutral-800">
                     <div className="flex items-center">
-                        <h1 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Task Manager</h1>
+                        <div className="flex items-center justify-between mb-4">
+                            <h1 className="mr-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                                Task Manager
+                            </h1>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                <DialogTitle></DialogTitle>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="flex items-center gap-2"
+                                        onClick={() => setIsDialogOpen(true)}
+                                    >
+                                        <Plus className="w-4 h-4" /> Add Sub Task
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>Create Subtask</DialogHeader>
+                                    <AddSubtask
+                                        taskId={Task.id} // Replace with dynamic task ID
+                                        onSuccess={handleDialogClose}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" className="mb-4" onClick={ handleSubmit}>
@@ -95,7 +137,7 @@ export default function EditTask({Task} : {Task : Task }) {
                 </p>
                 <form className="space-y-6">
                     <div className="flex flex-col gap-10 md:flex-row">
-                        <div className="flex-1 space-y-6">
+                        <div className="flex-1 space-y-4">
                             <div>
                                 <Label
                                     htmlFor="title"
@@ -213,6 +255,61 @@ export default function EditTask({Task} : {Task : Task }) {
                                     className="mt-1 block w-full rounded-md border border-neutral-300 px-4 py-2 text-neutral-900 focus:border-blue-500 focus:ring focus:ring-blue-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
                                 />
                             </div>
+                            <div className='mt-1'>list of subtasks</div>
+                            <Table className="w-full bg-neutral-100 dark:bg-neutral-800">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead>Description</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {Task.subtasks?.length ? (
+                                        Task.subtasks.map((task) => (
+                                            <TableRow key={task.id}>
+                                                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
+                                                    {task.title}
+                                                </TableCell>
+                                                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
+                                                    {task.description}
+                                                </TableCell>
+                                                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
+                                                    <span
+                                                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                                                            task.status === 'completed'
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
+                                                                : task.status === 'pending'
+                                                                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+                                                                : task.status === 'in-progress'
+                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100'
+                                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                                                        }`}
+                                                    >
+                                                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center space-x-4">
+                                                        <DeleteTaskSimplified taskid={ task.id } title={task.title} />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={5}
+                                                className="px-6 py-4 text-center text-sm text-neutral-500 dark:text-neutral-400"
+                                            >
+                                                No tasks found.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+
                         </div>
                         <div className="w-full md:w-1/3">
 
@@ -235,14 +332,14 @@ export default function EditTask({Task} : {Task : Task }) {
                                     </span>
                                 </div>
                             )}
-                            <p className='mt-4'>
-                                <DeleteTask id={ Task.id }/>
-                            </p>
+                            <div className='mt-5'>
+                                <DeleteTask taskid={ Task.id }/>
+                            </div>
                         </div>
                     </div>
                 </form>
 
-                <div className="mt-6">
+                <div className="mt-4">
                     <p className="text-sm text-neutral-500 dark:text-neutral-400">
                         Note: Ensure all fields are filled out correctly before submitting.
                     </p>
